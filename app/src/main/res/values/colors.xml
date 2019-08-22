@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2E3032</color>
+    <color name="colorPrimaryDark">#212121</color>
+    <color name="colorAccent">#D30000</color>
+    <color name="colorBackGround">#D7D1CF</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteTrasparent">#80FFFFFF</color>
+    <color name="colorLike">#3F51B5</color>
+    <color name="colorDislike">#F44336</color>
+    <color name="colorFriend">#C6DDEA</color>
+    <color name="colorMusician">#CEE3C4</color>
+    <color name="colorFriendTxt">#255A7A</color>
+    <color name="colorMusicianTxt">#2E632D</color>
+    <color name="colorTrasparent">#00FFFFFF</color>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp">
+    <ImageView
+        android:id="@+id/skill_elem_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="centerCrop"
+        android:padding="5dp"
+        android:src="@drawable/vm"
+        />
+    <TextView
+        android:id="@+id/num_need_skill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/notificaton_badge"
+        android:text="2"
+        android:textColor="@color/colorWhite"
+        android:textStyle="bold"
+        android:textSize="12dp"
+        />
+
+</LinearLayout>

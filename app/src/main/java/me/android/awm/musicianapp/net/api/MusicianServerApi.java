@@ -16,7 +16,7 @@ import me.android.awm.musicianapp.utils.UserPrefHelper;
 
 public class MusicianServerApi {
 
-    //private static String domain = "http://192.168.1.7:8000";
+    //private static String domain = "http://192.168.1.11:8000";
     //private static String domain = "http://10.42.92.74:8000";
     private static String domain = "http://musicianawm.herokuapp.com";
     private static String loginUrl() { return domain+"/login_app/"; }
@@ -52,6 +52,7 @@ public class MusicianServerApi {
 
     public static void loginUser(Context context, HttpManager.HttpManagerCallback callback,
                                  String username, String pwd) throws JSONException {
+        System.out.println(JsonForMusicianServer.asJsonForServerLogin(username, pwd));
         HttpManager manager = new HttpManager(context, loginUrl(),
                 JsonForMusicianServer.asJsonForServerLogin(username, pwd),
                 HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);

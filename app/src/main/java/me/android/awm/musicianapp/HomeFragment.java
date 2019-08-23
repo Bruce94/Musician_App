@@ -105,6 +105,7 @@ public class HomeFragment extends Fragment {
         post_list.setAdapter(adapter);
         progressBar = getActivity().findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
+        posts.clear();
     }
 
     public void suggested_friends(){

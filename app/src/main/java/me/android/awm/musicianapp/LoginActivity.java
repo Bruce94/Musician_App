@@ -59,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
                     MusicianServerApi.loginUser(MainApplication.getInstance().getCurrentActivity(), new HttpManager.HttpManagerCallback() {
                         @Override
                         public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
+                            System.out.println("Ha rispostox " +response);
+
                             JSONObject json = new JSONObject(response);
                             System.out.println("Ha rispostox " + json);
                             if(json.has("message")){

@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        getHomePosts();
+        //getHomePosts();
 
         MainApplication.socket.on("post arrived", new Emitter.Listener() {
             @Override
@@ -105,7 +105,6 @@ public class HomeFragment extends Fragment {
         post_list.setAdapter(adapter);
         progressBar = getActivity().findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
-        posts.clear();
     }
 
     public void suggested_friends(){
@@ -180,6 +179,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -189,6 +189,7 @@ public class HomeFragment extends Fragment {
 
     private void getHomePosts(){
         posts.clear();
+//        adapter.notifyDataSetChanged();
         try {
             MusicianServerApi.home_posts(MainApplication.getInstance().getCurrentActivity(),
                     new HttpManager.HttpManagerCallback() {

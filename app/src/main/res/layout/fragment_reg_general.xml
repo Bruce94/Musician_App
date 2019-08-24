@@ -42,18 +42,6 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/edit_reg_country"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="Country"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="18dp"
-            />
-
-        <EditText
             android:id="@+id/edit_reg_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

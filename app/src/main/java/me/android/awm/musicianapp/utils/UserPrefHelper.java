@@ -42,12 +42,11 @@ public class UserPrefHelper {
         editor.commit();
     }
 
-    public static void setUserGeneralData(String phone, String country, String city){
+    public static void setUserGeneralData(String phone, String city){
         SharedPreferences sp = MainApplication.getInstance().getSharedPreferences(
                 MainApplication.PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("phone",phone);
-        editor.putString("country",country);
         editor.putString("city",city);
         editor.commit();
     }

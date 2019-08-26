@@ -145,6 +145,7 @@ public class ChatFragment  extends Fragment {
     }
 
     private void get_messages(){
+        messages.clear();
         try {
             MusicianServerApi.getMessages(MainApplication.getInstance().getCurrentActivity(),
                     new HttpManager.HttpManagerCallback() {

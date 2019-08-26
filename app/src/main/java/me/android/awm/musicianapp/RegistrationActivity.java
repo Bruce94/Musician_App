@@ -70,7 +70,7 @@ public class RegistrationActivity extends AppCompatActivity implements WorkflowL
     public void onBackPressed_reg() {
         new AlertDialog.Builder(this)
                 .setTitle("Cancel Account Creation")
-                .setMessage("Are you sure you want to cancel account creation? This will discard any inormation you've entered so far")
+                .setMessage("Are you sure you want to cancel account creation? This will discard any information you've entered so far")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

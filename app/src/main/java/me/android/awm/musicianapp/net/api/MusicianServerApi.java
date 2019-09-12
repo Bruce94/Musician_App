@@ -49,6 +49,9 @@ public class MusicianServerApi {
     private static String userRemoveCandBandUrl(int band_id){return domain+"/musician/"+band_id+"/user_remove_cand_band/app/";}
     private static String userAcceptCandBandUrl(int band_id){return domain+"/musician/"+band_id+"/user_accept_cand_band/app/";}
     private static String getBandMembersUrl(int band_id){return domain+"/musician/"+band_id+"/get_band_members/app/";}
+    private static String changeBioUrl(){return domain+"/musician/change_bio/app/";}
+    private static String changeInfoUrl(){return domain+"/musician/change_info/app/";}
+    private static String changeSkillsUrl(){return domain+"/musician/change_skills/app/";}
 
     public static void loginUser(Context context, HttpManager.HttpManagerCallback callback,
                                  String username, String pwd) throws JSONException {
@@ -296,4 +299,29 @@ public class MusicianServerApi {
                 HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
         manager.execute();
     }
+
+    public static void changeBio(Context context, HttpManager.HttpManagerCallback callback,
+                                 String bio_text) throws Exception {
+        HttpManager manager = new HttpManager(context, changeBioUrl(),
+                JsonForMusicianServer.getJsontoChangeBio(bio_text),
+                HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
+        manager.execute();
+    }
+
+    public static void changeInfo(Context context, HttpManager.HttpManagerCallback callback,
+                                  String gender_text, String city_text, String email_text, String phone_number_text) throws Exception {
+        HttpManager manager = new HttpManager(context, changeInfoUrl(),
+                JsonForMusicianServer.getJsontoChangeInfo(gender_text, city_text, email_text, phone_number_text),
+                HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
+        manager.execute();
+    }
+
+    public static void changeSkills(Context context, HttpManager.HttpManagerCallback callback,
+                                    List<String> skills) throws Exception {
+        HttpManager manager = new HttpManager(context, changeSkillsUrl(),
+                JsonForMusicianServer.getJsontoChangeSkills(skills),
+                HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
+        manager.execute();
+    }
+
 }

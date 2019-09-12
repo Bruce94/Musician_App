@@ -61,11 +61,44 @@ public class PortalActivity extends AppCompatActivity {
 
         homeFragment = new HomeFragment();
         notificationFragment = new NotificationFragment();
+
         try {
-            profileFragment = new ProfileFragment(new UserBean(UserPrefHelper.getLoggedUser()));
+            MusicianServerApi.getMusician(MainApplication.getInstance().getCurrentActivity(), new HttpManager.HttpManagerCallback() {
+                @Override
+                public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
+                    JSONObject json = new JSONObject(response);
+                    if(json.has("error")){
+                        Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                "Server error", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    UserBean fm = null;
+                    try {
+                        fm = new UserBean(UserPrefHelper.getLoggedUser());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    json.remove("img");
+                    json.put("img", fm.getImg());
+                    json.remove("server_img");
+                    json.put("server_img", fm.getServer_img());
+
+                    UserPrefHelper.setLoggedUser(json.toString());
+
+                    try {
+                        profileFragment = new ProfileFragment(new UserBean(UserPrefHelper.getLoggedUser()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            },UserPrefHelper.getCurrentUser().getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+
         messageFragment = new MessageFragment();
         reqFriendFragment = new ReqFriendFragment();
 

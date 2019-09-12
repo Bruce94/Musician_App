@@ -2,17 +2,23 @@ package me.android.awm.musicianapp;
 
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.android.awm.musicianapp.adapter.SkillsAdapter;
 import me.android.awm.musicianapp.bean.BandBean;
 import me.android.awm.musicianapp.bean.SkillInfoBean;
 import me.android.awm.musicianapp.bean.UserBean;
@@ -52,11 +59,16 @@ public class ProfileFragment extends Fragment {
     private int friends_data, post_data;
     private int friendship = -1;
     private List<BandBean> bands = new LinkedList<>();
+    private List<SkillInfoBean> skills = new LinkedList<SkillInfoBean>();
+    private List<String> skills_selected = new LinkedList<String>();
+    //private List<ModBioBean> bio = new LinkedList<ModBioBean>();
+    private ImageView modify_bio_btn, modify_info_btn, modify_skills_btn;
 
     @SuppressLint("ValidFragment")
     public ProfileFragment(UserBean user) {
         // Required empty public constructor
         this.user = user;//new UserBean(UserPrefHelper.getLoggedUser());
+        System.out.println("user GENDER: " + this.user.getGender());
     }
 
 
@@ -90,8 +102,32 @@ public class ProfileFragment extends Fragment {
         text_distance = getActivity().findViewById(R.id.text_distance);
         layout_band = getActivity().findViewById(R.id.layout_band);
         list_band = getActivity().findViewById(R.id.list_band);
+        modify_bio_btn = getActivity().findViewById(R.id.modify_bio_btn);
+        modify_info_btn = getActivity().findViewById(R.id.modify_info_btn);
+        modify_skills_btn = getActivity().findViewById(R.id.modify_skills_btn);
 
         list_skills.removeAllViews();
+
+        try {
+            MusicianServerApi.getMusician(getActivity(), new HttpManager.HttpManagerCallback() {
+                @Override
+                public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
+                    JSONObject json = new JSONObject(response);
+                    if(json.has("error")){
+                        Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                "Server error", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    JSONArray all_skills = json.getJSONArray("skills");
+                    user.setSkills(all_skills);
+
+                }
+            },user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         text_name.setText(user.getFname() + " " +user.getLname());
         text_bio.setText(user.getBio());
@@ -102,12 +138,36 @@ public class ProfileFragment extends Fragment {
         text_email.setText(user.getEmail());
         text_phone.setText(user.getPhone());
         get_user_info();
+        fillSkillList();
 
         text_n_friends.setText(friends_data+" friends");
         text_n_posts.setText(post_data+" posts");
 
         pic_profile_user.setImageURI(Uri.fromFile(new File(user.getImg())));
 
+
+        modify_bio_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user_mod_bio();
+            }
+        });
+        modify_info_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user_mod_info();
+            }
+        });
+        modify_skills_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    user_mod_skills();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         friend_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,9 +187,255 @@ public class ProfileFragment extends Fragment {
                 send_message_btn.setVisibility(View.GONE);
                 text_distance.setVisibility(View.GONE);
             }
+            else{
+                modify_bio_btn.setVisibility(View.GONE);
+                modify_info_btn.setVisibility(View.GONE);
+                modify_skills_btn.setVisibility(View.GONE);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void fillSkillList(){
+        skills.clear();
+        skills.add(new SkillInfoBean("Acoustic Guitar", R.drawable.acoustic_guitar_icon));
+        skills.add(new SkillInfoBean("Bass Guitar", R.drawable.bass_guitar_icon));
+        skills.add(new SkillInfoBean("DJ", R.drawable.dj_icon));
+        skills.add(new SkillInfoBean("Drum", R.drawable.drum_set_icon));
+        skills.add(new SkillInfoBean("Electric Guitar", R.drawable.guitar_icon));
+        skills.add(new SkillInfoBean("Harp", R.drawable.harp_icon));
+        skills.add(new SkillInfoBean("Percussion", R.drawable.conga_icon));
+        skills.add(new SkillInfoBean("Piano", R.drawable.piano_icon));
+        skills.add(new SkillInfoBean("Saxophone", R.drawable.saxophone_icon));
+        skills.add(new SkillInfoBean("Violin", R.drawable.violin_icon));
+        skills.add(new SkillInfoBean("Voice", R.drawable.microphone_icon));
+    }
+
+    private void user_mod_skills() throws JSONException {
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.setCancelable(false);
+
+        dialog.setContentView(R.layout.alert_mod_skills);
+
+        Button cancel_btn = dialog.findViewById(R.id.cancel_btn);
+        Button confirm_btn = dialog.findViewById(R.id.confirm_btn);
+
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        for(SkillInfoBean skill : skills) { skill.setState(false); }
+
+        for(int j = 0; j < user.getSkills().length(); j++) {
+            JSONObject s = (JSONObject) user.getSkills().get(j);
+            SkillInfoBean old_skill = UserPrefHelper.getSkillBean(s.getString("name"));
+
+            for(SkillInfoBean skill : skills)
+                if(skill.getName().equals(old_skill.getName()))
+                    skill.setState(true);
+        }
+
+        ListView listView = dialog.findViewById(R.id.list_mod_skills);
+        SkillsAdapter arrayAdapter = new SkillsAdapter(getActivity(), skills);
+        listView.setAdapter(arrayAdapter);
+
+        confirm_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                skills_selected.clear();
+                for (SkillInfoBean s : skills)
+                    if (s.getState())
+                        skills_selected.add(s.getName());
+
+                try {
+                    MusicianServerApi.changeSkills(MainApplication.getInstance().getCurrentActivity(),
+                            new HttpManager.HttpManagerCallback() {
+                                @Override
+                                public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
+                                    JSONObject json = new JSONObject(response);
+                                    if(json.has("error")) {
+                                        Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                                "Server error", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else if(json.has("message")){
+                                        if(skills_selected.size() > 0) {
+                                            //JSONArray endorsers = s.getJSONArray("endorsers");
+                                            list_skills.removeAllViews();
+                                            JSONArray new_skills = json.getJSONArray("new_skills");
+                                            user.setSkills(new_skills);
+                                            UserPrefHelper.setLoggedUser(user.getUserBeanJsonString());
+                                            setupUserSkills();
+
+                                            Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                                    "Skills updated successfully", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        }
+                                        else
+                                            Toast.makeText(getActivity(),"Select at least one skill", Toast.LENGTH_SHORT);
+
+                                    }
+                                }
+                            },skills_selected);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dialog.show();
+    }
+
+    private void user_mod_info(){
+        final Dialog dialog = new Dialog(getActivity());
+
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.alert_mod_info);
+
+        final EditText new_email = dialog.findViewById(R.id.edit_reg_email);
+        final EditText new_phone = dialog.findViewById(R.id.edit_reg_phone);
+        final EditText new_city = dialog.findViewById(R.id.edit_reg_city);
+        final RadioButton radio_male = dialog.findViewById(R.id.radio_male);
+        final RadioButton radio_female = dialog.findViewById(R.id.radio_female);
+        //mbio.setText(user.getBio());
+        Button cancel_btn = dialog.findViewById(R.id.cancel_btn);
+        Button confirm_btn = dialog.findViewById(R.id.confirm_btn);
+
+        if(text_gender.getText().toString().equals("M")){
+            radio_male.setChecked(true);
+        }
+        else if(text_gender.getText().toString().equals("F")){
+            radio_female.setChecked(true);
+        }
+        new_email.setText(user.getEmail());
+        new_phone.setText(user.getPhone());
+        new_city.setText(user.getCity());
+
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        confirm_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!new_email.getText().toString().isEmpty() && !new_phone.getText().toString().isEmpty() && !new_city.getText().toString().isEmpty() ){
+
+                    if(radio_male.isChecked())
+                        text_gender.setText("M");
+                    else if(radio_female.isChecked())
+                        text_gender.setText("F");
+
+
+                    try {
+                        MusicianServerApi.changeInfo(MainApplication.getInstance().getCurrentActivity(), //MainApplication.getInstance().getCurrentActivity(),
+                                new HttpManager.HttpManagerCallback() {
+                                    @Override
+                                    public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
+                                        JSONObject json = new JSONObject(response);
+                                        if(json.has("error")) {
+                                            Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                                    "Server error", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if(json.has("message")){
+                                            String mcity = new_city.getText().toString();
+                                            String memail = new_email.getText().toString();
+                                            String mphone = new_phone.getText().toString();
+                                            String mgender = text_gender.getText().toString();
+
+                                            user.setUserInfoData(mgender, mcity, memail, mphone);
+                                            UserPrefHelper.setLoggedUser(user.getUserBeanJsonString());
+
+                                            dialog.dismiss();
+                                            Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                                    "Info saved successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                },text_gender.getText().toString(), new_city.getText().toString(), new_email.getText().toString(), new_phone.getText().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    text_city.setText(new_city.getText().toString());
+                    text_email.setText(new_email.getText().toString());
+                    text_phone.setText(new_phone.getText().toString());
+
+
+
+                    dialog.dismiss();
+                }
+                else{
+                    Toast.makeText(getActivity(),"Fill in all the empty fields !", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+        dialog.show();
+    }
+
+    private void user_mod_bio(){
+        final Dialog dialog = new Dialog(getActivity());
+
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.alert_mod_bio);
+
+        final EditText mbio = dialog.findViewById(R.id.new_bio_text);
+        //mbio.setText(user.getBio());
+        Button cancel_btn = dialog.findViewById(R.id.cancel_btn);
+        Button confirm_btn = dialog.findViewById(R.id.confirm_btn);
+        mbio.setText(user.getBio());
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        confirm_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!mbio.getText().toString().isEmpty()){
+                    try {
+                        MusicianServerApi.changeBio(MainApplication.getInstance().getCurrentActivity(), //MainApplication.getInstance().getCurrentActivity(),
+                                new HttpManager.HttpManagerCallback() {
+                                    @Override
+                                    public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
+                                        JSONObject json = new JSONObject(response);
+                                        if(json.has("error")) {
+                                            Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                                    "Server error", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if(json.has("message")){
+                                            String new_bio_text = mbio.getText().toString();
+
+                                            user.setBio(new_bio_text);
+                                            UserPrefHelper.setLoggedUser(user.getUserBeanJsonString());
+                                            text_bio.setText(new_bio_text);
+
+                                            dialog.dismiss();
+                                            Toast.makeText(MainApplication.getInstance().getCurrentActivity(),
+                                                    "Bio saved successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                },mbio.getText().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                else{
+                    Toast.makeText(getActivity(),"Insert some bio!", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+        dialog.show();
     }
 
     private void user_friends(){
@@ -225,6 +531,8 @@ public class ProfileFragment extends Fragment {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
+
                         }
                     });
                 }

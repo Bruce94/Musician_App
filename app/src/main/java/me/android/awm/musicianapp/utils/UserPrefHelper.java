@@ -59,6 +59,17 @@ public class UserPrefHelper {
         editor.commit();
     }
 
+    public static void setUserInfoData(String gender, String city, String email, String phone){
+        SharedPreferences sp = MainApplication.getInstance().getSharedPreferences(
+                MainApplication.PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("gender",gender);
+        editor.putString("city",city);
+        editor.putString("email",email);
+        editor.putString("phone",phone);
+        editor.commit();
+    }
+
     public static void setUserPhotoData(String imageUri){
         SharedPreferences sp = MainApplication.getInstance().getSharedPreferences(
                 MainApplication.PREFERENCES, Context.MODE_PRIVATE);

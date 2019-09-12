@@ -133,4 +133,32 @@ public class JsonForMusicianServer {
         jsonObject.put("checked_skills", jsonArray);
         return jsonObject;
     }
+
+    public static JSONObject getJsontoChangeBio(String bio_text) throws Exception{
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", UserPrefHelper.getCurrentUser().getId());
+        jsonObject.put("bio_text", bio_text);
+        return jsonObject;
+    }
+
+    public static JSONObject getJsontoChangeInfo(String gender_text, String city_text, String email_text, String phone_number_text) throws Exception{
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", UserPrefHelper.getCurrentUser().getId());
+        jsonObject.put("gender_text", gender_text);
+        jsonObject.put("city_text", city_text);
+        jsonObject.put("email_text", email_text);
+        jsonObject.put("phone_number_text", phone_number_text);
+        return jsonObject;
+    }
+
+    public static JSONObject getJsontoChangeSkills(List<String> skills) throws Exception{
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", UserPrefHelper.getCurrentUser().getId());
+        JSONArray jsonArray = new JSONArray();
+        for (String cs: skills) {
+            jsonArray.put(cs);
+        }
+        jsonObject.put("new_skills", jsonArray);
+        return jsonObject;
+    }
 }

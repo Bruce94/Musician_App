@@ -6,7 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import me.android.awm.musicianapp.R;
+import me.android.awm.musicianapp.utils.UserPrefHelper;
 
 public class UserBean {
     private int id;
@@ -215,5 +219,22 @@ public class UserBean {
 
     public void setServer_img(String server_img) {
         this.server_img = server_img;
+    }
+
+    public void setUserInfoData(String gender, String city, String email, String phone){
+        this.gender = gender;
+        this.city = city;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public void setSkillsWithName(List<String> skills_strings) {
+        JSONArray jsonArray_skills = new JSONArray();
+        for (String cs: skills_strings) {
+            jsonArray_skills.put(cs);
+        }
+       // jsonObject.put("new_skills", jsonArray);
+
+        this.skills = jsonArray_skills;
     }
 }

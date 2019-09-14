@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -78,6 +79,9 @@ public class ReqFriendFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        PortalActivity portal_activity = (PortalActivity) MainApplication.getInstance().getCurrentActivity();
+        Menu menu = portal_activity.mainNav.getMenu();
+        menu.findItem(R.id.nav_req_friend).setIcon(R.drawable.ic_friends);
         list_friend_req = getActivity().findViewById(R.id.list_friend_req);
         text_no_requests = getActivity().findViewById(R.id.text_no_requests);
         progressBar = getActivity().findViewById(R.id.progressBar);
@@ -138,6 +142,16 @@ public class ReqFriendFragment extends Fragment {
                                             text_no_requests.setVisibility(View.VISIBLE);
                                         else
                                             text_no_requests.setVisibility(View.GONE);
+                                    }
+                                    else{
+                                        PortalActivity portal_activity = (PortalActivity) MainApplication.getInstance().getCurrentActivity();
+                                        Menu menu = portal_activity.mainNav.getMenu();
+                                        if(array.length()>0){
+                                            menu.findItem(R.id.nav_req_friend).setIcon(R.drawable.ic_new_friend);
+                                        }
+                                        else{
+                                            menu.findItem(R.id.nav_req_friend).setIcon(R.drawable.ic_friends);
+                                        }
                                     }
                                     for(int i = 0; i < array.length(); i++){
                                         try {

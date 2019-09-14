@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -118,9 +119,15 @@ public class MessageFragment extends Fragment {
                             JSONObject json = new JSONObject(response);
                             if(json.has("chats")){
                                 JSONArray array = json.getJSONArray("chats");
+                                PortalActivity portal_activity = (PortalActivity) MainApplication.getInstance().getCurrentActivity();
+                                Menu menu = portal_activity.mainNav.getMenu();
+                                menu.findItem(R.id.nav_messages).setIcon(R.drawable.ic_message);
                                 for(int i = 0; i < array.length(); i++){
                                     try {
                                         ChatBean u = new ChatBean(array.get(i).toString());
+                                        if(!u.isSeen()){
+                                            menu.findItem(R.id.nav_messages).setIcon(R.drawable.ic_new_messages);
+                                        }
                                         download_musician_image(u);
                                     } catch (Exception e) {
                                         e.printStackTrace();

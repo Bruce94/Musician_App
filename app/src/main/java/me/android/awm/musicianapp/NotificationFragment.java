@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -185,7 +186,6 @@ public class NotificationFragment extends Fragment {
                         public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
                             JSONObject json = new JSONObject(response);
                             System.out.println("Notification risposto: "+response);
-
                             if(json.has("message")){
                                 if(json.get("message").equals("yes")){
                                     JSONArray array = json.getJSONArray("data");
@@ -194,6 +194,14 @@ public class NotificationFragment extends Fragment {
                                             text_no_notifications.setVisibility(View.VISIBLE);
                                         else
                                             text_no_notifications.setVisibility(View.GONE);
+                                    }
+                                    PortalActivity portal_activity = (PortalActivity) MainApplication.getInstance().getCurrentActivity();
+                                    Menu menu = portal_activity.mainNav.getMenu();
+                                    if(array.length()>0){
+                                        menu.findItem(R.id.nav_notification).setIcon(R.drawable.ic_new_notif);
+                                    }
+                                    else{
+                                        menu.findItem(R.id.nav_notification).setIcon(R.drawable.ic_notifications);
                                     }
                                     for(int i = 0; i < array.length(); i++){
                                         try {

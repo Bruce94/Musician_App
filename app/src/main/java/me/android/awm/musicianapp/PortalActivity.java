@@ -37,7 +37,7 @@ import me.android.awm.musicianapp.utils.UserPrefHelper;
 
 public class PortalActivity extends AppCompatActivity {
     public static String TAG = "PortalActivity";
-    private BottomNavigationView mainNav;
+    public BottomNavigationView mainNav;
     private FrameLayout mainFrame;
     private String actualFragment = "";
 
@@ -57,7 +57,6 @@ public class PortalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_portal);
         mainFrame = findViewById(R.id.main_frame);
         mainNav =  findViewById(R.id.main_nav);
-
 
         homeFragment = new HomeFragment();
         notificationFragment = new NotificationFragment();

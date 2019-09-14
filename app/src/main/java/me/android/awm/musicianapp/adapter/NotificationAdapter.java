@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -111,6 +112,11 @@ public class NotificationAdapter extends ArrayAdapter {
                     fragmentTransaction.replace(R.id.main_frame,bandFragment);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
+                }
+                if(notifications.size()==1){
+                    PortalActivity portal_activity = (PortalActivity) MainApplication.getInstance().getCurrentActivity();
+                    Menu menu = portal_activity.mainNav.getMenu();
+                    menu.findItem(R.id.nav_notification).setIcon(R.drawable.ic_notifications);
                 }
             }
         });

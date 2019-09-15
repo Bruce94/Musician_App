@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -26,14 +25,13 @@ import java.io.File;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.android.awm.musicianapp.CreatePostFragment;
 import me.android.awm.musicianapp.MainApplication;
 import me.android.awm.musicianapp.PortalActivity;
 import me.android.awm.musicianapp.PostFragment;
 import me.android.awm.musicianapp.ProfileFragment;
 import me.android.awm.musicianapp.R;
 import me.android.awm.musicianapp.TagFragment;
-import me.android.awm.musicianapp.bean.NotificationBean;
+import me.android.awm.musicianapp.UsersLikedFragment;
 import me.android.awm.musicianapp.bean.PostBean;
 import me.android.awm.musicianapp.bean.UserBean;
 import me.android.awm.musicianapp.net.HttpManager;
@@ -201,6 +199,12 @@ public class PostAdapter extends ArrayAdapter {
         if (i.getN_like() > 0){
             viewHolder.n_like_text.setText(i.getN_like()+" Like");
             viewHolder.n_like_text.setVisibility(View.VISIBLE);
+            viewHolder.n_like_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    view_users_liked(i, 1);
+                }
+            });
         }
         else{
             viewHolder.n_like_text.setVisibility(View.GONE);
@@ -208,6 +212,12 @@ public class PostAdapter extends ArrayAdapter {
         if (i.getN_dislike() > 0){
             viewHolder.n_dislike_text.setText(i.getN_dislike()+" Dislike");
             viewHolder.n_dislike_text.setVisibility(View.VISIBLE);
+            viewHolder.n_dislike_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    view_users_liked(i, 2);
+                }
+            });
         }
         else{
             viewHolder.n_dislike_text.setVisibility(View.GONE);
@@ -280,6 +290,25 @@ public class PostAdapter extends ArrayAdapter {
             e.printStackTrace();
         }
     }
+
+    private void view_users_liked(PostBean post, int vote){
+        UsersLikedFragment createPostFragment = new UsersLikedFragment();
+        Bundle arguments = new Bundle();
+        try {
+            arguments.putString( "post" , post.getPostBeanJsonString());
+            arguments.putString( "vote" , Integer.toString(vote));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        createPostFragment.setArguments(arguments);
+
+        FragmentTransaction fragmentTransaction = ((PortalActivity) MainApplication.getInstance().
+                getCurrentActivity()).getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_frame,createPostFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
 
     private void comment(PostBean post){
         PostFragment createPostFragment = new PostFragment();

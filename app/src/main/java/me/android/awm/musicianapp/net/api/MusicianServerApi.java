@@ -52,6 +52,7 @@ public class MusicianServerApi {
     private static String changeBioUrl(){return domain+"/musician/change_bio/app/";}
     private static String changeInfoUrl(){return domain+"/musician/change_info/app/";}
     private static String changeSkillsUrl(){return domain+"/musician/change_skills/app/";}
+    private static String viewULikesUrl(){return domain+"/portal/view_ulikes/app/";}
 
     public static void loginUser(Context context, HttpManager.HttpManagerCallback callback,
                                  String username, String pwd) throws JSONException {
@@ -72,7 +73,7 @@ public class MusicianServerApi {
 
 
     public static void userRegistration(Context context, HttpManager.HttpManagerCallback callback,
-                                        JSONObject json) throws JSONException, IOException {
+                                        JSONObject json) throws JSONException {
 
         HttpManager manager = new HttpManager(context, userRegistrationUrl(),
                 json, HttpManager.OPERATION_TYPE.OPERATION_TYPE_MULTIPART,callback);
@@ -320,6 +321,14 @@ public class MusicianServerApi {
                                     List<String> skills) throws Exception {
         HttpManager manager = new HttpManager(context, changeSkillsUrl(),
                 JsonForMusicianServer.getJsontoChangeSkills(skills),
+                HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
+        manager.execute();
+    }
+
+    public static void view_ulikes(Context context, HttpManager.HttpManagerCallback callback,
+                                   int post_id, int vote) throws Exception {
+        HttpManager manager = new HttpManager(context, viewULikesUrl(),
+                JsonForMusicianServer.getVoteJson(post_id,vote),
                 HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
         manager.execute();
     }

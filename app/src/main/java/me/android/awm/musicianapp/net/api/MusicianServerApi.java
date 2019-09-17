@@ -121,9 +121,10 @@ public class MusicianServerApi {
     }
 
     public static void searchMusicians(Context context, HttpManager.HttpManagerCallback callback,
-                                       JSONObject query) throws Exception {
+                                       String query, List<String> skills) throws Exception {
         HttpManager manager = new HttpManager(context, searchMusiciansUrl(),
-                query, HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
+                JsonForMusicianServer.getJsonForBandList(query, skills),
+                HttpManager.OPERATION_TYPE.OPERATION_TYPE_POST, callback);
         manager.execute();
     }
 

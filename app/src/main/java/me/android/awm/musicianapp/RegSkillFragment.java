@@ -72,8 +72,6 @@ public class RegSkillFragment extends MusicianFragment {
                             UserPrefHelper.getUserData());
                 } catch (JSONException e) {
                     e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         });

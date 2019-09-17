@@ -184,8 +184,8 @@ public class NotificationFragment extends Fragment {
                     new HttpManager.HttpManagerCallback() {
                         @Override
                         public void httpManagerCallbackResult(String response, boolean esito) throws JSONException {
-                            JSONObject json = new JSONObject(response);
                             System.out.println("Notification risposto: "+response);
+                            JSONObject json = new JSONObject(response);
                             if(json.has("message")){
                                 if(json.get("message").equals("yes")){
                                     JSONArray array = json.getJSONArray("data");

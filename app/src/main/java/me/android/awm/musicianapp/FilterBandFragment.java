@@ -32,6 +32,8 @@ public class FilterBandFragment extends Fragment {
     private List<SkillInfoBean> skills = new LinkedList<SkillInfoBean>();
     private ListView list_view_skills;
     private Button btn_apply;
+    private String name;
+    private int type;
     private ArrayList<String> skills_selected = new ArrayList<>();
 
     @Override
@@ -45,11 +47,17 @@ public class FilterBandFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        Bundle arguments = getArguments();
+        name = arguments.getString("name", "");
+        type = arguments.getInt("type");
+
+
         btn_apply = getActivity().findViewById(R.id.btn_apply);
         list_view_skills = getActivity().findViewById(R.id.list_skills);
         edit_query_band = getActivity().findViewById(R.id.edit_query_band);
         list_view_skills.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         fillSkillList();
+        edit_query_band.setText(name);
 
         adapter = new SkillsAdapter(getActivity(), skills);
         list_view_skills.setAdapter(adapter);
@@ -61,13 +69,20 @@ public class FilterBandFragment extends Fragment {
                         skills_selected.add(s.getName());
                     }
                 }
-                BandListFragment fragment = new BandListFragment();
                 Bundle arguments = new Bundle();
                 arguments.putString("query", edit_query_band.getText().toString());
                 arguments.putStringArrayList("checked_skills",skills_selected);
-                fragment.setArguments(arguments);
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_frame,fragment);
+                if(type == 1) {
+                    BandListFragment fragment = new BandListFragment();
+                    fragment.setArguments(arguments);
+                    fragmentTransaction.replace(R.id.main_frame,fragment);
+                }
+                else{
+                    SearchFragment fragment = new SearchFragment();
+                    fragment.setArguments(arguments);
+                    fragmentTransaction.replace(R.id.main_frame,fragment);
+                }
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

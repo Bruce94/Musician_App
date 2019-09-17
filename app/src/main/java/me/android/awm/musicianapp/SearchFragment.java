@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -37,7 +38,10 @@ public class SearchFragment extends Fragment {
     private List<UserBean> users = new LinkedList<UserBean>();
     private ListView list_musicians;
     private ProgressBar progressBar;
+    private Button filter_btn;
     private String query;
+    private List<String> checked_skills = new LinkedList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,9 +55,18 @@ public class SearchFragment extends Fragment {
         super.onStart();
         Bundle arguments = getArguments();
         query = arguments.getString("query");
+        if(arguments.containsKey("checked_skills"))
+            checked_skills = arguments.getStringArrayList("checked_skills");
         list_musicians = getActivity().findViewById(R.id.list_musicians);
         text_no_found = getActivity().findViewById(R.id.text_no_found);
         progressBar = getActivity().findViewById(R.id.progressBar);
+        filter_btn = getActivity().findViewById(R.id.filter_btn);
+        filter_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                apply_filter();
+            }
+        });
         progressBar.setVisibility(View.VISIBLE);
         adapter = new FriendReqAdapter(getActivity(), users);
         list_musicians.setAdapter(adapter);
@@ -61,7 +74,6 @@ public class SearchFragment extends Fragment {
 
         try {
             JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("query", query);
             MusicianServerApi.searchMusicians(MainApplication.getInstance().getCurrentActivity(),
                     new HttpManager.HttpManagerCallback() {
                         @Override
@@ -96,7 +108,7 @@ public class SearchFragment extends Fragment {
                             }
 
                         }
-                    },jsonQuery);
+                    },query,checked_skills);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,5 +135,18 @@ public class SearchFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+    private void apply_filter(){
+        FilterBandFragment fragment = new FilterBandFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString( "name" , query);
+        arguments.putInt( "type" , 2);
+        fragment.setArguments(arguments);
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_frame,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
 
 }

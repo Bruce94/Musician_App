@@ -104,6 +104,9 @@ public class BandListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FilterBandFragment fragment = new FilterBandFragment();
+                Bundle arguments = new Bundle();
+                arguments.putInt( "type" , 1);
+                fragment.setArguments(arguments);
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_frame,fragment);
                 fragmentTransaction.addToBackStack(null);
